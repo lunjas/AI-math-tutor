@@ -1,6 +1,6 @@
 # 🎓 AI Math Tutor
 
-A personalized AI math tutor that uses **Retrieval-Augmented Generation (RAG)** and **symbolic computation** to help students learn mathematics from their own course materials.
+A personalized AI math tutor that uses **Retrieval-Augmented Generation (RAG)** and **symbolic computation** to help students learn mathematics from their own course materials. This implementation has been done in cooperation with Cursor Agent (original prompt entered for the agent is in `EXECUTION_PLAN.md`).
 
 ## Features
 
@@ -31,7 +31,7 @@ A personalized AI math tutor that uses **Retrieval-Augmented Generation (RAG)** 
 ## Prerequisites
 
 - Python 3.8 or higher
-- OpenAI API key
+- Azure AI Foundry access (for Azure OpenAI API key and endpoint)
 
 ## Installation
 
@@ -177,7 +177,9 @@ Edit `.env` to customize settings:
 
 ```env
 # API Keys
-OPENAI_API_KEY=your_openai_api_key_here
+AZURE_OPENAI_ENDPOINT = your_azure_openai_endpoint
+AZURE_OPENAI_API_KEY = your_azure_openai_api_key
+AZURE_OPENAI_API_VERSION = your_azure_openai_api_version
 
 # Model Configuration
 EMBEDDING_MODEL=text-embedding-3-large
@@ -273,7 +275,7 @@ Derivative: 3*x**2 + 2
 
 ## Troubleshooting
 
-**Error: "OPENAI_API_KEY not set"**
+**Error: "AZURE_OPENAI_API_KEY not set"**
 - Make sure you've created a `.env` file with your API key
 
 **No relevant materials found**
