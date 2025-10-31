@@ -55,7 +55,9 @@ pip install -r requirements.txt
      ```
    - Edit `.env` and add your OpenAI API key:
      ```
-     OPENAI_API_KEY=sk-your-key-here
+     AZURE_OPENAI_ENDPOINT = your_azure_openai_endpoint
+     AZURE_OPENAI_API_KEY = your_azure_openai_api_key
+     AZURE_OPENAI_API_VERSION = your_azure_openai_api_version
      ```
 
 ## Quick Start
