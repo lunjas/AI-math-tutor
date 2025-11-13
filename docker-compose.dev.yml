@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend (Development)
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ai-math-tutor-backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app/backend
+      - ./src:/app/src
+    environment:
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-02-15-preview}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-large}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      - VECTOR_DB_PATH=/app/data/vector_db
+      - DOCUMENTS_PATH=/app/data/documents
+      - TOP_K_RESULTS=${TOP_K_RESULTS:-3}
+      - CHUNK_SIZE=${CHUNK_SIZE:-600}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-100}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_RELOAD=true
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080,http://localhost:5173
+      - LOG_LEVEL=DEBUG
+    command: python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    networks:
+      - ai-math-tutor-network-dev
+
+  # Open WebUI (Development)
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ai-math-tutor-webui-dev
+    ports:
+      - "3000:8080"
+    environment:
+      - OPENAI_API_BASE_URL=http://backend:8000/api/v1
+      - OPENAI_API_KEY=dummy-key
+      - WEBUI_AUTH=false
+      - WEBUI_NAME=AI Math Tutor (Dev)
+      - ENABLE_SIGNUP=false
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - open-webui-data-dev:/app/backend/data
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - ai-math-tutor-network-dev
+
+networks:
+  ai-math-tutor-network-dev:
+    driver: bridge
+
+volumes:
+  open-webui-data-dev:
+
