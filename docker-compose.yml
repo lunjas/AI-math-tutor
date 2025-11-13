@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ai-math-tutor-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app/backend
+      - ./src:/app/src
+    environment:
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-02-15-preview}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-large}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      - VECTOR_DB_PATH=/app/data/vector_db
+      - DOCUMENTS_PATH=/app/data/documents
+      - TOP_K_RESULTS=${TOP_K_RESULTS:-3}
+      - CHUNK_SIZE=${CHUNK_SIZE:-600}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-100}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - ai-math-tutor-network
+
+  # Open WebUI
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ai-math-tutor-webui
+    ports:
+      - "3000:8080"
+    environment:
+      - OPENAI_API_BASE_URL=http://backend:8000/api/v1
+      - OPENAI_API_KEY=dummy-key
+      - WEBUI_AUTH=false
+      - WEBUI_NAME=AI Math Tutor
+      - ENABLE_SIGNUP=false
+    volumes:
+      - open-webui-data:/app/backend/data
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ai-math-tutor-network
+
+networks:
+  ai-math-tutor-network:
+    driver: bridge
+
+volumes:
+  open-webui-data:
+
