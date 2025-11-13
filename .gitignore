@@ -8,10 +8,16 @@ __pycache__/
 # Data
 data/
 *.pdf
+# Allow markdown documentation
 *.txt
+!requirements.txt
+!backend/requirements.txt
+!tests/requirements.txt
 *.md
 !README.md
-!EXECUTION_PLAN.md
+!QUICKSTART.md
+!QUICKSTART_WEB.md
+!ai_documents/*
 
 # IDE
 .vscode/
@@ -22,4 +28,19 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+
+# Docker
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
 
